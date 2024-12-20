@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -20,21 +21,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee findById(Long id) {
-        return employeeRepository.findById(id).get();
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
     }
 
     @Override
     public Employee createEmployee(Employee employee) {
+//        employee.setId(null);
         return employeeRepository.save(employee);
     }
 
     @Override
     public Employee updateEmployee(Employee employee) {
+        Employee employeeObj = employeeRepository.findById(employee.getId())
+                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + employee.getId()));
 
-        Employee employeeObj = employeeRepository.findById(employee.getId()).get();
-
-        if(employeeObj != null)
-        {
+        if (employeeObj != null) {
             employeeObj.setEmail(employee.getEmail());
             employeeObj.setName(employee.getName());
             employeeObj.setSalary(employee.getSalary());
@@ -45,15 +47,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public String deleteEmployee(Long id) {
+        Employee employeeObj = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
 
-        Employee employeeObj = employeeRepository.findById(id).get();
-        String deleteMsg = null;
+        employeeRepository.delete(employeeObj);
 
-        if(employeeObj != null)
-        {
-            employeeRepository.delete(employeeObj);
-            deleteMsg = "Employee Deleted Successfully for id "+id;
-        }
-        return deleteMsg;
+        return "Employee Deleted Successfully for id " + id;
     }
 }

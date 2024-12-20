@@ -15,14 +15,19 @@ import lombok.*;
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Version
+    private Integer version;
 
     private String name;
 
     private String email;
 
     private Integer salary;
+
+
 
 
     public Long getId() {
@@ -51,5 +56,8 @@ public class Employee {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setId(Object o) {
     }
 }
